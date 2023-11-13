@@ -52,22 +52,45 @@ public class ApplyTransform : MonoBehaviour
             displacement.z * Time.deltaTime
         );
 
-        Matrix4x4 composite = move;
+        Matrix4x4 moveOrigin = HW_Transforms.TranslationMat( // Move the object to the origin
+            -displacement.x * Time.deltaTime,
+            -displacement.y * Time.deltaTime,
+            -displacement.z * Time.deltaTime
+        );
+
+        Matrix4x4 moveObject = HW_Transforms.TranslationMat( // Move the object back to its original position
+            displacement.x,
+            displacement.y,
+            displacement.z
+        );
+
+        Matrix4x4 rotate = HW_Transforms.RotateMat( // Rotate the object
+            angle * Time.deltaTime,
+            rotationAxis
+        );
+
+        // Combine all the matrices into one.
+        // If move, then rotate, (rotate * move) then the object will rotate around the origin, not around itself 
+
+        Matrix4x4 composite = move * rotate;
+
+        // Matrix4x4 composite = move;
 
 
         for (int i = 0; i < newVertices.Length; i++)
         {
 
             Vector4 temp = new Vector4(
-                newVertices[i].x,
-                newVertices[i].y,
-                newVertices[i].z, 1
+                baseVertices[i].x,
+                baseVertices[i].y,
+                baseVertices[i].z, 1
                 );
             newVertices[i] = composite * temp;
         }
 
         // Replace the vertices of the mesh with the new ones
         mesh.vertices = newVertices;
+        mesh.RecalculateNormals(); // Recalculate the normals of the mesh
 
 
     }
