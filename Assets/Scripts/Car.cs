@@ -1,5 +1,5 @@
 /*
-CarTransform.cs
+Car.cs
 Use transformation matrices to modify the vertices of a mesh
 Applied to car object which will instantiate wheels and move them along with
 the car.
@@ -23,8 +23,34 @@ public class Car : MonoBehaviour
     Vector3[] carBaseVertices; // Original vertices
     Vector3[] carNewVertices;
 
+    public GameObject wheelPrefab;
+    public GameObject carObject;
     // Start is called before the first frame update
     void Start()
+    {
+        CopyCarVertices();
+        InstantiateWheels();
+    }
+
+    void InstantiateWheels()
+    {
+        // Instantiate the wheels at the correct positions
+        InstantiateWheelAtPosition(new Vector3(-0.46f, -0.25f, -0.78f)); // front right
+        InstantiateWheelAtPosition(new Vector3(-0.46f, -0.25f, 0.74f)); // back right
+        InstantiateWheelAtPosition(new Vector3(0.46f, -0.25f, -0.78f)); // front left
+        InstantiateWheelAtPosition(new Vector3(0.46f, -0.25f, 0.74f)); // back left
+    }
+
+    void InstantiateWheelAtPosition(Vector3 position)
+    {
+        GameObject wheelObject = Instantiate(wheelPrefab, position, Quaternion.identity);
+        Wheel wheelScript = wheelObject.GetComponent<Wheel>();
+        wheelScript.Initialize(position);
+        // Set empty "Car" object as parent of the wheel for cleaner hierarchy
+        wheelObject.transform.SetParent(carObject.transform);
+    }
+
+    void CopyCarVertices()
     {
         // get the mesh of the car's child (of type MeshFilter)
         mesh = GetComponentInChildren<MeshFilter>().mesh;
@@ -43,12 +69,6 @@ public class Car : MonoBehaviour
     void Update()
     {
         MoveCar();
-        MoveWheels();
-    }
-
-    void MoveWheels()
-    {
-
     }
 
     void MoveCar()

@@ -12,9 +12,10 @@ public class Wheel : MonoBehaviour
     // Method to initialize the wheel
     public void Initialize(Vector3 position)
     {
-        this.localPosition = position;
-        this.transform.localPosition = position;
-        // Additional initialization steps can be added here
+        this.localPosition = position; // Store the local position
+
+        // Use matrix multiplication to set the wheel's position
+
     }
 
     // Update is called once per frame
@@ -28,8 +29,6 @@ public class Wheel : MonoBehaviour
     {
         // Calculate the rotation amount
         float rotationAmount = rotationSpeed * Time.deltaTime;
-        // Apply rotation around the wheel's axis
-        this.transform.Rotate(Vector3.right, rotationAmount);
     }
 
     // Method to set the wheel's rotation speed
