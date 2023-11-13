@@ -1,10 +1,10 @@
-/* Use matrices to modify the vertices of a mesh 
+/*
+Use transformation matrices to modify the vertices of a mesh
 
-Note: the child has the mesh, not the parent object
-
-Pablo Banzo Prida
-2023-11-02
+Gilberto Echeverria (professor) - Edited on 2023-11-02
+Pablo Banzo Prida (student) - Edited on 2023-13-02
 */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +20,7 @@ public class ApplyTransform : MonoBehaviour
     Vector3[] baseVertices; // Original vertices
     Vector3[] newVertices;
 
+    // Start is called before the first frame update
     void Start()
     {
         // get the mesh of the object's child (of type MeshFilter)
@@ -33,65 +34,54 @@ public class ApplyTransform : MonoBehaviour
         {
             newVertices[i] = baseVertices[i];
         }
-
-
     }
 
     // Update is called once per frame
     void Update()
     {
         DoTransform();
-
     }
 
     void DoTransform()
     {
-        Matrix4x4 move = HW_Transforms.TranslationMat(
-            displacement.x * Time.deltaTime, // we add Time.deltaTime to make the movement frame rate independent
-            displacement.y * Time.deltaTime,
-            displacement.z * Time.deltaTime
-        );
+        // A matrix to move the object
+        Matrix4x4 move = HW_Transforms.TranslationMat(displacement.x * Time.time,
+                                                      displacement.y * Time.time,
+                                                      displacement.z * Time.time);
 
-        Matrix4x4 moveOrigin = HW_Transforms.TranslationMat( // Move the object to the origin
-            -displacement.x * Time.deltaTime,
-            -displacement.y * Time.deltaTime,
-            -displacement.z * Time.deltaTime
-        );
+        // Matrices to apply a rotation around an arbitrary point
+        // Using 'displacement' as the point of rotation
+        Matrix4x4 moveOrigin = HW_Transforms.TranslationMat(-displacement.x,
+                                                            -displacement.y,
+                                                            -displacement.z);
 
-        Matrix4x4 moveObject = HW_Transforms.TranslationMat( // Move the object back to its original position
-            displacement.x,
-            displacement.y,
-            displacement.z
-        );
+        Matrix4x4 moveObject = HW_Transforms.TranslationMat(displacement.x,
+                                                            displacement.y,
+                                                            displacement.z);
 
-        Matrix4x4 rotate = HW_Transforms.RotateMat( // Rotate the object
-            angle * Time.deltaTime,
-            rotationAxis
-        );
+        // Matrix to generate a rotataion
+        Matrix4x4 rotate = HW_Transforms.RotateMat(angle * Time.time,
+                                                   rotationAxis);
 
-        // Combine all the matrices into one.
-        // If move, then rotate, (rotate * move) then the object will rotate around the origin, not around itself 
-
+        // Combine all the matrices into a single one
+        // Rotate around a pivot point
+        //Matrix4x4 composite = moveObject * rotate * moveOrigin;
+        // Roll and move as a wheel
         Matrix4x4 composite = move * rotate;
 
-        // Matrix4x4 composite = move;
-
-
+        // Multiply each vertex in the mesh by the composite matrix
         for (int i = 0; i < newVertices.Length; i++)
         {
-
-            Vector4 temp = new Vector4(
-                baseVertices[i].x,
-                baseVertices[i].y,
-                baseVertices[i].z, 1
-                );
+            Vector4 temp = new Vector4(baseVertices[i].x,
+                                       baseVertices[i].y,
+                                       baseVertices[i].z,
+                                       1);
             newVertices[i] = composite * temp;
         }
 
-        // Replace the vertices of the mesh with the new ones
+        // Replace the vertices in the mesh
         mesh.vertices = newVertices;
-        mesh.RecalculateNormals(); // Recalculate the normals of the mesh
-
-
+        // Make sure the normals are adapted to the new vertex positions
+        mesh.RecalculateNormals();
     }
 }
