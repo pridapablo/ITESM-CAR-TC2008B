@@ -1,5 +1,5 @@
 /*
-HW_Transforms.cs
+Transformations.cs
 Functions to work with transformation matrices in 3D
 
 Gilberto Echeverria (professor) - Edited on 2022-11-03
@@ -15,7 +15,7 @@ using UnityEngine;
 public enum AXIS { X, Y, Z };
 // Values:        0  1  2
 
-public class HW_Transforms : MonoBehaviour
+public class Transformations : MonoBehaviour
 {
     // Define the transformation matrices with static methods
     public static Matrix4x4 TranslationMat(float tx, float ty, float tz)

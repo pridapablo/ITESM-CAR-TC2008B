@@ -1,5 +1,8 @@
 /*
+CarTransform.cs
 Use transformation matrices to modify the vertices of a mesh
+Applied to car object which will instantiate wheels and move them along with
+the car.
 
 Gilberto Echeverria (professor) - Edited on 2023-11-02
 Pablo Banzo Prida (student) - Edited on 2023-13-02
@@ -9,7 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ApplyTransform : MonoBehaviour
+public class Car : MonoBehaviour
 {
     [SerializeField] Vector3 displacement;
     [SerializeField] float angle;
@@ -17,51 +20,56 @@ public class ApplyTransform : MonoBehaviour
 
     // Mesh class to store the mesh of the object
     Mesh mesh;
-    Vector3[] baseVertices; // Original vertices
-    Vector3[] newVertices;
+    Vector3[] carBaseVertices; // Original vertices
+    Vector3[] carNewVertices;
 
     // Start is called before the first frame update
     void Start()
     {
-        // get the mesh of the object's child (of type MeshFilter)
+        // get the mesh of the car's child (of type MeshFilter)
         mesh = GetComponentInChildren<MeshFilter>().mesh;
         // get the vertices of the mesh
-        baseVertices = mesh.vertices;
+        carBaseVertices = mesh.vertices;
 
         // Create a copy of the original vertices
-        newVertices = new Vector3[baseVertices.Length];
-        for (int i = 0; i < baseVertices.Length; i++)
+        carNewVertices = new Vector3[carBaseVertices.Length];
+        for (int i = 0; i < carBaseVertices.Length; i++)
         {
-            newVertices[i] = baseVertices[i];
+            carNewVertices[i] = carBaseVertices[i];
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        DoTransform();
+        MoveCar();
+        MoveWheels();
     }
 
-    void DoTransform()
+    void MoveWheels()
+    {
+
+    }
+
+    void MoveCar()
     {
         // A matrix to move the object
-        Matrix4x4 move = HW_Transforms.TranslationMat(displacement.x * Time.time,
+        Matrix4x4 move = Transformations.TranslationMat(displacement.x * Time.time,
                                                       displacement.y * Time.time,
                                                       displacement.z * Time.time);
 
         // Matrices to apply a rotation around an arbitrary point
         // Using 'displacement' as the point of rotation
-        Matrix4x4 moveOrigin = HW_Transforms.TranslationMat(-displacement.x,
+        Matrix4x4 moveOrigin = Transformations.TranslationMat(-displacement.x,
                                                             -displacement.y,
                                                             -displacement.z);
 
-        Matrix4x4 moveObject = HW_Transforms.TranslationMat(displacement.x,
+        Matrix4x4 moveObject = Transformations.TranslationMat(displacement.x,
                                                             displacement.y,
                                                             displacement.z);
 
         // Matrix to generate a rotataion
-        Matrix4x4 rotate = HW_Transforms.RotateMat(angle * Time.time,
-                                                   rotationAxis);
+        Matrix4x4 rotate = Transformations.RotateMat(angle * Time.time, rotationAxis);
 
         // Combine all the matrices into a single one
         // Rotate around a pivot point
@@ -70,17 +78,17 @@ public class ApplyTransform : MonoBehaviour
         Matrix4x4 composite = move * rotate;
 
         // Multiply each vertex in the mesh by the composite matrix
-        for (int i = 0; i < newVertices.Length; i++)
+        for (int i = 0; i < carNewVertices.Length; i++)
         {
-            Vector4 temp = new Vector4(baseVertices[i].x,
-                                       baseVertices[i].y,
-                                       baseVertices[i].z,
-                                       1);
-            newVertices[i] = composite * temp;
+            Vector4 temp = new Vector4(carBaseVertices[i].x,
+                                        carBaseVertices[i].y,
+                                        carBaseVertices[i].z,
+                                        1);
+            carNewVertices[i] = composite * temp;
         }
 
         // Replace the vertices in the mesh
-        mesh.vertices = newVertices;
+        mesh.vertices = carNewVertices;
         // Make sure the normals are adapted to the new vertex positions
         mesh.RecalculateNormals();
     }
