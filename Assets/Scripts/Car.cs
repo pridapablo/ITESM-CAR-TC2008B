@@ -73,7 +73,7 @@ public class Car : MonoBehaviour
 
     void InstantiateWheelAtPosition(Vector3 position)
     {
-        GameObject wheelObject = Instantiate(wheelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        GameObject wheelObject = Instantiate(wheelPrefab, new Vector3(0, 0, 0), Quaternion.identity); // At the origin so that rotation is less expensive
         Wheel wheelScript = wheelObject.GetComponent<Wheel>();
         wheelScript.Initialize(position);
 
