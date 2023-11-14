@@ -32,6 +32,10 @@ public class Car : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Multiply the displacement's z component by -1 to make the car move
+        // forward
+        // displacement.z *= -1;
+
         // Create a game object to group everything
         carObject = new GameObject("Car");
         // set the parent of the car to the carObject
@@ -69,7 +73,7 @@ public class Car : MonoBehaviour
 
     void InstantiateWheelAtPosition(Vector3 position)
     {
-        GameObject wheelObject = Instantiate(wheelPrefab, position, Quaternion.identity);
+        GameObject wheelObject = Instantiate(wheelPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         Wheel wheelScript = wheelObject.GetComponent<Wheel>();
         wheelScript.Initialize(position);
 
@@ -100,16 +104,30 @@ public class Car : MonoBehaviour
 
     Matrix4x4 CarTransformations()
     {
-        // A matrix to move the object
+        // Translation matrix
         Matrix4x4 move = Transformations.TranslationMat(displacement.x * Time.time,
-                                                      displacement.y * Time.time,
-                                                      displacement.z * Time.time);
+                                                        displacement.y * Time.time,
+                                                        displacement.z * Time.time);
 
+        // Initialize composite matrix as just the translation
+        // Matrix4x4 composite = move;
 
-        Matrix4x4 composite = move;
+        // Calculate rotation angle based on displacement
+        float angle = Mathf.Atan2(displacement.z, displacement.x) * Mathf.Rad2Deg;
+
+        // // Offset the angle by 90 degrees
+        angle += 90;
+
+        // Rotation matrix around the Y axis
+        Matrix4x4 rotate = Transformations.RotateMat(angle, AXIS.Y);
+
+        Matrix4x4 composite = move * rotate; // Combine rotation and
+
+        // Matrix4x4 composite = move; // Combine rotation and
 
         return composite;
     }
+
 
     void UpdateCarMesh(Matrix4x4 composite)
     {

@@ -46,8 +46,13 @@ public class Wheel : MonoBehaviour
         // Rotate the wheel around the origin
         Matrix4x4 rotate = Transformations.RotateMat(angle, rotationAxis);
 
+        // // Translation to local position of the wheel relative to the car
+        Matrix4x4 translate = Transformations.TranslationMat(localPosition.x,
+                                                            localPosition.y,
+                                                            localPosition.z);
+
         // Compute the composite matrix
-        Matrix4x4 composite = carComposite * rotate;
+        Matrix4x4 composite = carComposite * translate * rotate;
 
         return composite;
     }
