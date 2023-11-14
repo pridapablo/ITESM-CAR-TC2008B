@@ -11,13 +11,17 @@ public class Wheel : MonoBehaviour
     Mesh mesh;
     Vector3[] wheelBaseVertices; // Original vertices
     Vector3[] wheelNewVertices;
-    public float wheelRadius = 0.5f;
-    public float rotationSpeed = 0f;
+    public float rotationSpeed;
+
+    public AXIS rotationAxis;
 
     // Method to initialize the wheel
-    public void Initialize(Vector3 position)
+    public void Initialize(Vector3 position, AXIS axis = AXIS.X, float speed = 200000f)
+
     {
         this.localPosition = position; // Store the local position
+        this.rotationAxis = axis; // Store the rotation axis
+        this.rotationSpeed = speed; // Store the rotation speed
         CopyWheelVertices(); // Copy the wheel vertices
     }
 
@@ -36,13 +40,23 @@ public class Wheel : MonoBehaviour
     }
     Matrix4x4 WheelTransformations(Matrix4x4 carComposite)
     {
-        return carComposite;
+        // Compute the angle of rotation
+        float angle = rotationSpeed * Time.deltaTime;
+
+        // Rotate the wheel around the origin
+        Matrix4x4 rotate = Transformations.RotateMat(angle, rotationAxis);
+
+        // Compute the composite matrix
+        Matrix4x4 composite = carComposite * rotate;
+
+        return composite;
     }
 
     public void MoveWheel(Matrix4x4 carComposite)
     {
         // Compute the composite matrix
         Matrix4x4 composite = WheelTransformations(carComposite);
+
         // Update the mesh
         UpdateWheelMesh(composite);
     }
@@ -56,17 +70,10 @@ public class Wheel : MonoBehaviour
                                         wheelBaseVertices[i].z,
                                         1);
             wheelNewVertices[i] = composite * temp;
-
-            // Replace the vertex in the mesh
-            mesh.vertices = wheelNewVertices;
-            // Recalculate the normals
-            mesh.RecalculateNormals();
         }
-    }
-
-    // Method to set the wheel's rotation speed
-    public void SetRotationSpeed(float speed)
-    {
-        this.rotationSpeed = speed;
+        // Replace the vertex in the mesh
+        mesh.vertices = wheelNewVertices;
+        // Recalculate the normals
+        mesh.RecalculateNormals();
     }
 }

@@ -15,8 +15,6 @@ using UnityEngine;
 public class Car : MonoBehaviour
 {
     [SerializeField] Vector3 displacement;
-    [SerializeField] float angle;
-    [SerializeField] AXIS rotationAxis;
 
     // Mesh class to store the mesh of the object
     Mesh mesh;
@@ -74,6 +72,7 @@ public class Car : MonoBehaviour
         GameObject wheelObject = Instantiate(wheelPrefab, position, Quaternion.identity);
         Wheel wheelScript = wheelObject.GetComponent<Wheel>();
         wheelScript.Initialize(position);
+
         // Set the parent of the wheel to the carObject
         wheelObject.transform.parent = carObject.transform;
 
@@ -106,21 +105,8 @@ public class Car : MonoBehaviour
                                                       displacement.y * Time.time,
                                                       displacement.z * Time.time);
 
-        // Matrices to apply a rotation around an arbitrary point
-        // Using 'displacement' as the point of rotation
-        Matrix4x4 moveOrigin = Transformations.TranslationMat(-displacement.x,
-                                                            -displacement.y,
-                                                            -displacement.z);
 
-        Matrix4x4 moveObject = Transformations.TranslationMat(displacement.x,
-                                                            displacement.y,
-                                                            displacement.z);
-
-        // Matrix to generate a rotataion
-        Matrix4x4 rotate = Transformations.RotateMat(angle * Time.time, rotationAxis);
-
-
-        Matrix4x4 composite = move * rotate;
+        Matrix4x4 composite = move;
 
         return composite;
     }

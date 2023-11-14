@@ -390,9 +390,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d214c1b22d2a94b35a978c23f3c89402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displacement: {x: 0, y: 0, z: -2}
-  angle: 0
-  rotationAxis: 0
+  displacement: {x: 0, y: 0, z: 0}
+  wheels: []
   wheelPrefab: {fileID: 1234148040704778032, guid: 1b97bc1182c3644ac83c7ddf11a902ce, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
