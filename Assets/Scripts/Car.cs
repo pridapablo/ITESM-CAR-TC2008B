@@ -23,14 +23,42 @@ public class Car : MonoBehaviour
     Vector3[] carBaseVertices; // Original vertices
     Vector3[] carNewVertices;
 
+    // Create a game object to group everything
+    GameObject carObject;
+
+    // Vector of wheel objects
+    public List<Wheel> wheels;
+
     public GameObject wheelPrefab;
-    public GameObject carObject;
+
     // Start is called before the first frame update
     void Start()
     {
+        // Create a game object to group everything
+        carObject = new GameObject("Car");
+        // set the parent of the car to the carObject
+        transform.parent = carObject.transform;
+
         CopyCarVertices();
         InstantiateWheels();
     }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // Compute the composite matrix
+        Matrix4x4 composite = CarTransformations();
+        // Update the car mesh
+        UpdateCarMesh(composite);
+
+        // Move the wheels
+        foreach (Wheel wheel in wheels)
+        {
+            wheel.MoveWheel(composite);
+        }
+    }
+
+    // Start methods
 
     void InstantiateWheels()
     {
@@ -46,8 +74,11 @@ public class Car : MonoBehaviour
         GameObject wheelObject = Instantiate(wheelPrefab, position, Quaternion.identity);
         Wheel wheelScript = wheelObject.GetComponent<Wheel>();
         wheelScript.Initialize(position);
-        // Set empty "Car" object as parent of the wheel for cleaner hierarchy
-        wheelObject.transform.SetParent(carObject.transform);
+        // Set the parent of the wheel to the carObject
+        wheelObject.transform.parent = carObject.transform;
+
+        // Add the wheel to the list of wheels
+        wheels.Add(wheelScript);
     }
 
     void CopyCarVertices()
@@ -65,13 +96,10 @@ public class Car : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        MoveCar();
-    }
 
-    void MoveCar()
+    // Update methods
+
+    Matrix4x4 CarTransformations()
     {
         // A matrix to move the object
         Matrix4x4 move = Transformations.TranslationMat(displacement.x * Time.time,
@@ -91,12 +119,14 @@ public class Car : MonoBehaviour
         // Matrix to generate a rotataion
         Matrix4x4 rotate = Transformations.RotateMat(angle * Time.time, rotationAxis);
 
-        // Combine all the matrices into a single one
-        // Rotate around a pivot point
-        //Matrix4x4 composite = moveObject * rotate * moveOrigin;
-        // Roll and move as a wheel
+
         Matrix4x4 composite = move * rotate;
 
+        return composite;
+    }
+
+    void UpdateCarMesh(Matrix4x4 composite)
+    {
         // Multiply each vertex in the mesh by the composite matrix
         for (int i = 0; i < carNewVertices.Length; i++)
         {
@@ -107,7 +137,7 @@ public class Car : MonoBehaviour
             carNewVertices[i] = composite * temp;
         }
 
-        // Replace the vertices in the mesh
+        // Replace the vertex in the mesh
         mesh.vertices = carNewVertices;
         // Make sure the normals are adapted to the new vertex positions
         mesh.RecalculateNormals();
