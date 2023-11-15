@@ -16,7 +16,7 @@ public class Wheel : MonoBehaviour
     public AXIS rotationAxis;
 
     // Method to initialize the wheel
-    public void Initialize(Vector3 position, AXIS axis = AXIS.X, float speed = 200000f)
+    public void Initialize(Vector3 position, float speed = 200f, AXIS axis = AXIS.X)
 
     {
         this.localPosition = position; // Store the local position
@@ -41,7 +41,7 @@ public class Wheel : MonoBehaviour
     Matrix4x4 WheelTransformations(Matrix4x4 carComposite)
     {
         // Compute the angle of rotation
-        float angle = rotationSpeed * Time.deltaTime;
+        float angle = rotationSpeed * Time.time;
 
         // Rotate the wheel around the origin
         Matrix4x4 rotate = Transformations.RotateMat(angle, rotationAxis);
