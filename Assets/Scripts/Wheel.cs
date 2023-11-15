@@ -1,3 +1,13 @@
+/*
+Wheel.cs
+Use transformation matrices to modify the vertices of a mesh
+
+Called by Car.cs to instantiate the wheels and move them along with the car.
+
+The wheels rotate by themselves, but they also follow the car's movement.
+
+Pablo Banzo Prida - Edited on 2023-11-15
+*/
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,10 +1,11 @@
 /*
 Car.cs
 Use transformation matrices to modify the vertices of a mesh
-Applied to car object which will instantiate wheels and move them along with
-the car.
 
-Gilberto Echeverria (professor) - Edited on 2023-11-02
+Applied to car object which will instantiate wheels and move them along with
+the car and call the wheel's methods to move them.
+
+Gilberto Echeverria (professor) - Edited on 2023-11-15
 Pablo Banzo Prida (student) - Edited on 2023-13-02
 */
 
@@ -32,10 +33,6 @@ public class Car : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Multiply the displacement's z component by -1 to make the car move
-        // forward
-        // displacement.z *= -1;
-
         // Create a game object to group everything
         carObject = new GameObject("Car");
         // set the parent of the car to the carObject
@@ -121,9 +118,7 @@ public class Car : MonoBehaviour
         // Rotation matrix around the Y axis
         Matrix4x4 rotate = Transformations.RotateMat(angle, AXIS.Y);
 
-        Matrix4x4 composite = move * rotate; // Combine rotation and
-
-        // Matrix4x4 composite = move; // Combine rotation and
+        Matrix4x4 composite = move * rotate;
 
         return composite;
     }
